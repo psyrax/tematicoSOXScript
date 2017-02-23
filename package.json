@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "filehound": "^1.14.1",
     "mp3-duration": "^1.0.10"
   }
 }
