@@ -123,8 +123,6 @@ function createVideos(image, audio, callback){
 		audio,
 		'-c:v',
 		'libx264',
-		'-x264opts',
-		'opencl',
 		'-tune',
 		'stillimage',
 		'-shortest',
