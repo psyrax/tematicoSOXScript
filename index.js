@@ -1,6 +1,4 @@
 const exec = require('child_process').exec;
-const originalBack = __dirname + '/back.mp3';
-const lowerBack = __dirname + '/lowerBack.mp3';
 const mp3Duration = require('mp3-duration');
 const spawn = require('child_process').spawn;
 const sync = require('child_process').spawnSync;
@@ -125,6 +123,8 @@ function createVideos(image, audio, callback){
 		audio,
 		'-c:v',
 		'libx264',
+		'-x264opts',
+		'opencl',
 		'-tune',
 		'stillimage',
 		'-shortest',
