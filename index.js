@@ -17,7 +17,7 @@ function lowerBackground(audioTrack, callback){
 	var lowerTask = spawn('sox', [
 		'-V',
 		'-r 44100',
-		'-v 0.1',
+		'-v 0.2',
 		audioTrack,
 		loweredFile,
 		'repeat',
@@ -122,7 +122,7 @@ function createVideos(image, audio, callback){
 		'-i',
 		audio,
 		'-c:v',
-		'libx264',
+		'h264_nvenc',
 		'-tune',
 		'stillimage',
 		'-shortest',
@@ -148,7 +148,7 @@ function createVideos(image, audio, callback){
 function callVideos(allFiles, currentIndex, callback){
 	createVideos(config.cover, allFiles[currentIndex], function(){
 		if ( currentIndex + 1 < allFiles.length ){
-			callVideos(currentIndex++);
+			callVideos(allFiles, currentIndex+1, function(){});
 		} else {
 			callback();
 		}
@@ -171,36 +171,45 @@ if (!fs.existsSync(tempConfig.distPath )) {
     fs.mkdirSync(tempConfig.videos);
 };
 
-files = FileHound.create()
-  .paths(tempConfig.audiomixPath)
-  .ext('mp3')
-  .find();
-
-files.then(function(found){
-	callVideos(found, 0, function(){
-		console.log('Videos Completed');
-	});
-});
-
-
-
-/*lowerBackground(config.music_bed, function(musicbed){
-
+function step2(){
 	files = FileHound.create()
-	  .paths(config.basepath)
-	  .ext('flac')
+	  .paths(tempConfig.audiomixPath)
+	  .ext('mp3')
 	  .find();
 
 	files.then(function(found){
-		console.log(found);
-		var mixedTracks = [];
-		found.forEach(function(file){
-			padAudio(file, function(audiopadded){
-				mixTracks(musicbed, audiopadded);
-			});
-		});
-		callVideos(mixedTracks, 0, function(){
+		callVideos(found, 0, function(){
 			console.log('Videos Completed');
 		});
+	});	
+};
+
+
+function step1(){
+	lowerBackground(config.music_bed, function(musicbed){
+
+		files = FileHound.create()
+		  .paths(config.basepath)
+		  .ext('flac')
+		  .find();
+
+		files.then(function(found){
+			console.log(found);
+			var mixedTracks = [];
+			found.forEach(function(file){
+				padAudio(file, function(audiopadded){
+					mixTracks(musicbed, audiopadded);
+				});
+			});
+		});
 	});
-});*/
+};
+
+switch(process.argv[3]){
+	case'step1':
+		step1();
+		break;
+	case 'step2':
+		step2();
+		break;
+}
